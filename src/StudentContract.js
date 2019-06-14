@@ -172,6 +172,19 @@ class StudentContract extends React.Component {
           </AppBar>
 
           <main>
+            <br/>
+            <Typography
+            component="h1"
+            variant="h2"
+            align="center"
+            color="textPrimary"
+            gutterBottom
+          >
+            Contract Marketplace
+          </Typography>
+          <Typography variant="h5" align="center" color="textSecondary" paragraph>
+            Show your interst in these open contracts to get connected with companies!
+          </Typography>
             <Container className={classes.cardGrid} maxWidth="md">
               {/* End hero unit */}
 

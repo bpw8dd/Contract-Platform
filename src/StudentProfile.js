@@ -16,6 +16,7 @@ import HeaderLogo from "./HeaderLogo.png";
 import firebaseApp from "./firebaseConfig.js";
 import { Avatar } from "antd";
 import { Redirect } from "react-router-dom";
+import { Modal } from "antd";
 
 // formatting for cards from material UI
 function MadeWithLove() {
@@ -64,8 +65,6 @@ const useStyles = theme => ({
   }
 });
 
-const cards = [1, 2, 3, 4];
-
 var names = [];
 
 var information = [];
@@ -80,28 +79,100 @@ class StudentProfile extends React.Component {
     this.state = {
       currentUser: null,
       uid: "",
-      all_contracts: []
+      current_contracts: [],
+      past_contracts: [],
+      visible: false
     };
   }
 
   componentDidMount() {
-    const usersRef = firebaseApp.database().ref(`students`);
-    usersRef.on("value", snap => {
-      let update = snap.val() || [];
-      this.updateSnap(update);
-    });
-
-    const contractsRef = firebaseApp.database().ref(`contracts`);
-    contractsRef.on("value", snap => {
-      let contracts = snap.val() || [];
-      this.updateContract(contracts);
-    });
+    if (firebaseApp.auth().currentUser) {
+      const currentUser = firebaseApp.auth().currentUser.uid;
+      const usersRef = firebaseApp.database().ref(`students`);
+      usersRef.on("value", snap => {
+        let update = snap.val() || [];
+        this.updateSnap(update);
+      });
+      let all_contracts = []; // get a list of all contracts!
+      const contractsRef = firebaseApp.database().ref(`contracts`);
+      contractsRef.on("value", snap => {
+        let contracts = snap.val() || [];
+        for (let contract in contracts) {
+          let students = contracts[contract].interested_students;
+          if (students === undefined) {
+            console.log("no interested students");
+          } else {
+            // only add to all_contracts if the student is listed as interested
+            for (let i = 0; i < students.length; i++) {
+              if (students[i] === currentUser) {
+                let new_contract = contracts[contract];
+                new_contract["firebaseKey"] = contract;
+                all_contracts.push(contracts[contract]);
+              }
+            }
+          }
+        }
+        // separate into past and current
+        let current_contracts = [];
+        let past_contracts = [];
+        console.log(all_contracts);
+        for (let contract in all_contracts) {
+          if (all_contracts[contract].date_completed) {
+            // if date_completed is not null...
+            past_contracts.push(all_contracts[contract]);
+          } else {
+            current_contracts.push(all_contracts[contract]);
+          }
+        }
+        console.log(current_contracts);
+        this.setState({
+          past_contracts: past_contracts,
+          current_contracts: current_contracts
+        });
+      });
+    }
   }
+
+  contractCompleted = contractFirebaseKey => {
+    // set the date_completed of that contract
+    const dateCompletedRef = firebaseApp
+      .database()
+      .ref(`contracts/${contractFirebaseKey}/date_completed`);
+    let date_completed = new Date().toLocaleString();
+    dateCompletedRef.set(date_completed);
+
+    // only current user is interested (delete other people in array);
+    const currentStudent = [firebaseApp.auth().currentUser.uid];
+    const interestedStudentsRef = firebaseApp
+      .database()
+      .ref(`contracts/${contractFirebaseKey}/interested_students`);
+    interestedStudentsRef.set(currentStudent).then(this.componentDidMount()); //
+  };
 
   renderRedirect = () => {
     if (this.state.redirect) {
       return <Redirect to="/" />;
     }
+  };
+
+  showModal = () => {
+    this.setState({
+      visible: true
+    });
+  };
+
+  handleOk = e => {
+    console.log(e);
+    this.setState({
+      visible: false
+    });
+  };
+
+  handleCancel = e => {
+    console.log(e);
+    this.setState({
+      visible: false
+    });
   };
 
   setRedirect = () => {
@@ -117,7 +188,6 @@ class StudentProfile extends React.Component {
 
         let currentUser = "";
         for (let user in value) {
-          console.log(value[user].uid);
           if (value[user].uid === uid) {
             currentUser = value[user];
           }
@@ -137,26 +207,7 @@ class StudentProfile extends React.Component {
     });
   };
 
-  updateContract = contracts => {
-    return new Promise(resolve => {
-      let all_contracts = [];
-
-      for (let contract in contracts) {
-        all_contracts.push(contracts[contract]);
-      }
-      this.setState(
-        {
-          all_contracts: all_contracts
-        },
-        () => {
-          resolve();
-        }
-      );
-    });
-  };
-
   render() {
-    console.log(this.state.titles);
     const { users } = this.state;
     const { uid } = this.state.uid;
     const { currentUser } = this.state;
@@ -164,6 +215,8 @@ class StudentProfile extends React.Component {
 
     return (
       <div marginRight="0px">
+        {}
+        {firebaseApp.auth().currentUser ? "" : this.setRedirect()}
         {this.renderRedirect()}
         <React.Fragment>
           <CssBaseline />
@@ -222,6 +275,7 @@ class StudentProfile extends React.Component {
                   />
                   <div style={{ justifyContent: "space-between" }}>
                     <a
+                      target="_blank"
                       href={currentUser ? currentUser.linkedIn : ""}
                       padding="50px"
                     >
@@ -229,7 +283,10 @@ class StudentProfile extends React.Component {
                         Linked In
                       </Button>
                     </a>
-                    <a href={currentUser ? currentUser.github : ""}>
+                    <a
+                      target="_blank"
+                      href={currentUser ? currentUser.github : ""}
+                    >
                       <Button variant="outlined" color="primary">
                         GitHub
                       </Button>
@@ -251,7 +308,7 @@ class StudentProfile extends React.Component {
                         Current Contracts
                       </Typography>
                       <div align="center" display="flex-start">
-                        {this.state.all_contracts.map((card, index) => (
+                        {this.state.current_contracts.map((card, index) => (
                           <Grid
                             item
                             key={index}
@@ -278,8 +335,14 @@ class StudentProfile extends React.Component {
                                   marginTop: "20px"
                                 }}
                               >
-                                <Button size="small" color="primary">
-                                  View
+                                <Button
+                                  size="small"
+                                  color="primary"
+                                  onClick={() =>
+                                    this.contractCompleted(card.firebaseKey)
+                                  }
+                                >
+                                  Completed
                                 </Button>
                               </CardActions>
                             </Card>
@@ -300,7 +363,7 @@ class StudentProfile extends React.Component {
                         Past Contracts
                       </Typography>
                       <div align="center" display="flex-start">
-                        {this.state.all_contracts.map(card => (
+                        {this.state.past_contracts.map(card => (
                           <Grid
                             item
                             key={card}
@@ -320,70 +383,12 @@ class StudentProfile extends React.Component {
                                 </Typography>
                                 <Typography>{card.details}</Typography>
                               </CardContent>
-                              <CardActions
-                                style={{
-                                  display: "center",
-                                  justifyItems: "center",
-                                  marginTop: "20px"
-                                }}
-                              >
-                                <Button size="small" color="primary">
-                                  View
-                                </Button>
-                              </CardActions>
                             </Card>
                           </Grid>
                         ))}
                       </div>
                     </Grid>
                   </Grid>
-                  {/* <Typography
-                    component="h1"
-                    variant="h2"
-                    align="center"
-                    marginRight="0px"
-                    color="textPrimary"
-                    x
-                    gutterBottom
-                  >
-                    Contracts
-                  </Typography>
-                  <div align="center" display="flex-start">
-                    {cards.map(card => (
-                      <Grid
-                        item
-                        key={card}
-                        xs={12}
-                        sm={6}
-                        md={8}
-                        align="center"
-                      >
-                        <Card className={classes.card}>
-                          <CardContent className={classes.cardContent}>
-                            <Typography
-                              gutterBottom
-                              variant="h5"
-                              component="h2"
-                            >
-                              Contract Name
-                            </Typography>
-                            <Typography>Contract Details</Typography>
-                          </CardContent>
-                          <CardActions
-                            style={{
-                              display: "center",
-                              justifyItems: "center",
-                              marginTop: "20px"
-                            }}
-                          >
-                            <Button size="small" color="primary">
-                              View
-                            </Button>
-                          </CardActions>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </div> */}
                 </Grid>
               </Grid>
               <Container maxWidth="sm">

@@ -13,6 +13,8 @@ import "./NewContract.css";
 import firebaseApp from "./firebaseConfig";
 import { Alert } from "antd";
 import { Redirect } from "react-router-dom";
+import Typography from "@material-ui/core/Typography";
+
 
 class NewContract extends React.Component {
   state = {
@@ -122,13 +124,29 @@ class NewContract extends React.Component {
           </Toolbar>
         </AppBar>
 
-        <br />
-        <h1>Post a New Contract</h1>
+        <br/>
+                <Typography
+                  component="h1"
+                  variant="h2"
+                  align="center"
+                  color="textPrimary"
+                  gutterBottom
+                >
+                  Post a New Contract
+                </Typography>
+                <Typography
+                  variant="h5"
+                  align="center"
+                  color="textSecondary"
+                  paragraph
+                >
+                  Please input your new contract information below!
+                </Typography>
         <div className="new-contract">
           {this.state.addedSuccess ? (
             <Alert message="Form Submitted!" type="success" />
           ) : (
-            <div>Input your contract information below.</div>
+            <div></div>
           )}
           {this.state.addedFailure ? (
             <Alert message="Please fill out every field" type="error" />
