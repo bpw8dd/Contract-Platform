@@ -48,6 +48,10 @@ export default class ForumPage extends React.Component {
 
   createPost = event => {
     this.createInDatabase().then(() => {
+      this.setState({
+        title: "",
+        details: ""
+      });
       //   console.log(this.state.postid);
       //   var newArray = this.state.posts.slice();
       //   newArray.unshift({
@@ -264,8 +268,8 @@ export default class ForumPage extends React.Component {
           Developer Forum
         </Typography>
         <Typography variant="h5" align="center" color="textSecondary" paragraph>
-          Learn, share, and build with other developers in the RevTek community!
-          Give back some knowledge to others and share a post today.
+          Learn, share, and build with other developers in the RevTech
+          community! Give back some knowledge to others and share a post today.
         </Typography>
         {/* </Grid> */}
         <div className="postBar">
