@@ -40,7 +40,8 @@ const useStyles = theme => ({
     padding: theme.spacing(8, 0, 6)
   },
   heroButtons: {
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(4),
+    marginLeft: "60px"
   },
   cardGrid: {
     paddingTop: theme.spacing(8),
@@ -62,8 +63,6 @@ const useStyles = theme => ({
     padding: theme.spacing(6)
   }
 });
-
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 class StudentContract extends React.Component {
   constructor(props) {
@@ -100,9 +99,14 @@ class StudentContract extends React.Component {
       let all_contracts = [];
 
       for (let contract in contracts){
-        let new_contract = contracts[contract];
-        new_contract["firebaseKey"] = contract;
-        all_contracts.push(new_contract);
+        if (contracts[contract].date_completed){
+          continue;
+        }
+        else {
+          let new_contract = contracts[contract];
+          new_contract["firebaseKey"] = contract;
+          all_contracts.push(new_contract);
+        }
       }
       this.setState(
           {
@@ -127,7 +131,9 @@ class StudentContract extends React.Component {
       if (studentIDs){
         Object.keys(studentIDs).map(
           (key) => {
-            all_interested.push(studentIDs[key])
+            if (studentIDs[key] !== currentStudentUID){
+              all_interested.push(studentIDs[key])
+            }
           }
         )
       }
@@ -138,9 +144,7 @@ class StudentContract extends React.Component {
 
 
   render() {
-    const { users } = this.state;
-    const { uid } = this.state.uid;
-    const { currentUser } = this.state;
+
     const { classes } = this.props;
     return (
       <div>
@@ -183,7 +187,7 @@ class StudentContract extends React.Component {
             Contract Marketplace
           </Typography>
           <Typography variant="h5" align="center" color="textSecondary" paragraph>
-            Show your interst in these open contracts to get connected with companies!
+            Show your interest in these open contracts to get connected with companies!
           </Typography>
             <Container className={classes.cardGrid} maxWidth="md">
               {/* End hero unit */}
@@ -198,13 +202,12 @@ class StudentContract extends React.Component {
                         </Typography>
                         <Typography>{card.details}</Typography>
                       </CardContent>
+                      Payment: ${card.payment}
                       <CardActions>
-                        <Button size="small" color="primary" onClick={()=>this.addInterest(card.firebaseKey)}>
+                        <Button size="small" color="primary" onClick={()=>this.addInterest(card.firebaseKey)} style={{marginLeft:"60px"}}>
                           I'm Interested!
                         </Button>
-                        {/* <Button size="small" color="primary">
-                      Edit
-                    </Button> */}
+
                       </CardActions>
                     </Card>
                   </Grid>

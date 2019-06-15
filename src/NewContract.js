@@ -95,6 +95,11 @@ class NewContract extends React.Component {
 
   clearForm = () => {
     document.getElementById("create-contract-form").reset();
+    this.setState({
+      contract_title: "",
+      contract_details: "",
+      compensation: "",
+    })
   };
 
   render() {

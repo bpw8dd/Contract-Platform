@@ -41,17 +41,20 @@ const useStyles = theme => ({
     padding: theme.spacing(8, 0.5, 6)
   },
   heroButtons: {
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(4),
+    marginLeft: "60px"
   },
   cardGrid: {
     paddingTop: theme.spacing(8),
     paddingBottom: theme.spacing(8)
   },
   card: {
+    padding: "20px",
+    marginTop: "50px",
+    marginLeft: "50px",
     height: "100%",
     display: "flex",
-    padding: "20px",
-    marginTop: "50px"
+    flexDirection: "column"
   },
   cardMedia: {
     paddingTop: "56.25%" // 16:9
@@ -254,6 +257,7 @@ class StudentProfile extends React.Component {
                     color="textPrimary"
                     x
                     gutterBottom
+                    style={{ marginBottom: "50px" }}
                   >
                     {firebaseApp.auth().currentUser
                       ? firebaseApp.auth().currentUser.displayName
@@ -272,6 +276,7 @@ class StudentProfile extends React.Component {
                         ? firebaseApp.auth().currentUser.photoURL
                         : this.setRedirect()
                     }
+                    style={{ marginBottom: "50px" }}
                   />
                   <div style={{ justifyContent: "space-between" }}>
                     <a
@@ -287,7 +292,11 @@ class StudentProfile extends React.Component {
                       target="_blank"
                       href={currentUser ? currentUser.github : ""}
                     >
-                      <Button variant="outlined" color="primary">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        style={{ marginLeft: "15px" }}
+                      >
                         GitHub
                       </Button>
                     </a>
@@ -328,12 +337,13 @@ class StudentProfile extends React.Component {
                                 </Typography>
                                 <Typography>{card.details}</Typography>
                               </CardContent>
+                              Payment: ${card.payment}
                               <CardActions
-                                style={{
-                                  display: "center",
-                                  justifyItems: "center",
-                                  marginTop: "20px"
-                                }}
+                              // style={{
+                              //   display: "center",
+                              //   justifyItems: "center",
+                              //   marginTop: "20px"
+                              // }}
                               >
                                 <Button
                                   size="small"
@@ -341,6 +351,7 @@ class StudentProfile extends React.Component {
                                   onClick={() =>
                                     this.contractCompleted(card.firebaseKey)
                                   }
+                                  style={{ marginLeft: "150px" }}
                                 >
                                   Completed
                                 </Button>

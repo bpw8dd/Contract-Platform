@@ -171,9 +171,7 @@ class AllStudents extends React.Component {
 
                               display: "flex-end"
                             }}
-                          >
-                            Github: {githubs[index]}
-                          </CardContent>
+                          />
 
                           <CardContent
                             style={{
@@ -182,9 +180,16 @@ class AllStudents extends React.Component {
                               display: "flex"
                             }}
                           >
-                            " " {linkedIns[card]}
-                            <div marginRight="50px">
-                              <a target="_blank" href={githubs[index]}>
+                            {linkedIns[card]}
+                            <div
+                              marginRight="50px"
+                              style={{ marginLeft: "60px", marginTop: "0px" }}
+                            >
+                              <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={githubs[index]}
+                              >
                                 <img
                                   alt="logo"
                                   src={githubLogo}
@@ -194,7 +199,12 @@ class AllStudents extends React.Component {
                                   marginRight="50px"
                                 />
                               </a>
-                              <a target="_blank" href={linkedIns[index]}>
+                              <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={linkedIns[index]}
+                                style={{ marginLeft: "20px" }}
+                              >
                                 <img
                                   alt="logo"
                                   src={linkedinLogo}

@@ -1,6 +1,6 @@
 body {
   text-align: center;
-  background-color: rgba(223, 223, 223, 0.315); 
+  background-color: rgba(223, 223, 223, 0.315);
   min-height: 100vh;
   margin: 0;
 }
@@ -17,5 +17,5 @@ hr {
   background-color: rgb(179, 179, 179);
   border: 0 none;
   margin-top: 5px;
-  margin-bottom:5px;
-  }
+  margin-bottom: 5px;
+}

@@ -3,7 +3,6 @@ import ForumComment from "./ForumComment.js";
 import ForumPost from "./ForumPost.js";
 import { Button, Input } from "antd";
 import "./ForumPage.css";
-import { FormHelperText } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import firebaseApp from "./firebaseConfig";
 import StudentNavbar from "./StudentNavbar.js";
@@ -12,10 +11,9 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Toolbar from "@material-ui/core/Toolbar";
 import AppBar from "@material-ui/core/AppBar";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
+import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment";
-// import moment = require("moment");
 import { Redirect } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
@@ -26,6 +24,9 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     textAlign: "center",
     color: theme.palette.text.secondary
+  },
+  card: {
+    minWidth: 275
   }
 }));
 
@@ -230,7 +231,6 @@ export default class ForumPage extends React.Component {
     });
   };
   render() {
-    //   const classes = useStyles();
     return (
       <div className="container">
         {firebaseApp.auth().currentUser ? "" : this.setRedirect()}
@@ -258,6 +258,7 @@ export default class ForumPage extends React.Component {
           </Toolbar>
         </AppBar>
         {/* <Grid item xs ={12}> */}
+<<<<<<< HEAD
         <br/>
         <Typography
           component="h1"
@@ -272,6 +273,30 @@ export default class ForumPage extends React.Component {
           Learn, share, and build with other developers in the RevTech
           community! Give back some knowledge to others and share a post today.
         </Typography>
+=======
+        <br />
+        <Container className="login" maxWidth="sm">
+          <Typography
+            component="h1"
+            variant="h2"
+            align="center"
+            color="textPrimary"
+            gutterBottom
+          >
+            Developer Forum
+          </Typography>
+          <Typography
+            variant="h5"
+            align="center"
+            color="textSecondary"
+            paragraph
+          >
+            Learn, share, and build with other developers in the RevTek
+            community! Give back some knowledge to others and share a post
+            today.
+          </Typography>
+        </Container>
+>>>>>>> 485309b30c19197192450dc254024181a8a1cf1d
         {/* </Grid> */}
         <div className="postBar">
           <div>

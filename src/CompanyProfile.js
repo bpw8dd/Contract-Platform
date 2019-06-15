@@ -72,7 +72,9 @@ class CompanyProfile extends React.Component {
     this.state = {
       currentCompany: null,
       uid: "",
-      company_contracts: []
+      company_contracts: [],
+      current_contracts: [],
+      past_contracts: []
     };
   }
 
@@ -109,9 +111,21 @@ class CompanyProfile extends React.Component {
           company_contracts.push(contracts[contract]);
         }
       }
+      // sort current and past
+      let current_contracts = [];
+      let past_contracts = [];
+      for (let contract in company_contracts) {
+        if (company_contracts[contract].date_completed) {
+          past_contracts.push(company_contracts[contract]);
+        } else {
+          current_contracts.push(company_contracts[contract]);
+        }
+      }
       this.setState({
         all_contracts: contracts,
-        company_contracts: company_contracts
+        company_contracts: company_contracts,
+        current_contracts: current_contracts,
+        past_contracts: past_contracts
       });
     });
   };
@@ -161,25 +175,26 @@ class CompanyProfile extends React.Component {
   handleClick = (event, card) => {
     event.preventDefault();
     const { all_contracts } = this.state;
-    console.log(all_contracts);
     let contract_key = "";
-    Object.keys(all_contracts).map(key => {
-      if ((all_contracts[key].details = card.details)) {
-        contract_key = key;
-      }
-    });
+    if (all_contracts) {
+      Object.keys(all_contracts).map(key => {
+        if ((all_contracts[key].date_created = card.date_created)) {
+          contract_key = key;
+        }
+      });
 
-    console.log(`${contract_key}`);
-    const contractRef = firebaseApp.database().ref(`contracts/${contract_key}`);
+      console.log(`${contract_key}`);
+      const contractRef = firebaseApp
+        .database()
+        .ref(`contracts/${contract_key}`);
 
-    contractRef.remove().then(() => {
-      console.log("remove succeeded");
-    });
+      contractRef.remove().then(() => {
+        console.log("remove succeeded");
+      });
+    }
   };
 
   render() {
-    // const { users } = this.state;
-    // const { uid } = this.state.uid;
     const { currentCompany } = this.state;
     const { classes } = this.props;
     return (
@@ -219,6 +234,7 @@ class CompanyProfile extends React.Component {
                     color="textPrimary"
                     x
                     gutterBottom
+                    style={{ marginBottom: "40px" }}
                   >
                     {this.state.currentCompany ? (
                       this.state.currentCompany.name.toUpperCase()
@@ -239,13 +255,18 @@ class CompanyProfile extends React.Component {
                         ? firebaseApp.auth().currentUser.photoURL
                         : this.setRedirect()
                     }
+                    style={{ marginBottom: "40px" }}
                   />
                   <div style={{ justifyContent: "space-between" }}>
                     <a
                       target="_blank"
                       href={currentCompany ? currentCompany.website : ""}
                     >
-                      <Button variant="contained" color="primary">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        marginTop="400px"
+                      >
                         Website
                       </Button>
                     </a>
@@ -266,7 +287,7 @@ class CompanyProfile extends React.Component {
                         Current Contracts
                       </Typography>
                       <div align="center" display="flex-start">
-                        {this.state.company_contracts.map((card, index) => (
+                        {this.state.current_contracts.map((card, index) => (
                           <Grid
                             item
                             key={index}
@@ -285,6 +306,9 @@ class CompanyProfile extends React.Component {
                                   {card.title}
                                 </Typography>
                                 <Typography>{card.details}</Typography>
+                                <Typography>
+                                  Payment Offered: ${card.payment}
+                                </Typography>
                               </CardContent>
                               <CardActions
                                 style={{
@@ -293,8 +317,14 @@ class CompanyProfile extends React.Component {
                                   marginTop: "20px"
                                 }}
                               >
-                                <Button size="small" color="primary">
-                                  View
+                                <Button
+                                  size="small"
+                                  color="primary"
+                                  onClick={event =>
+                                    this.handleClick(event, card)
+                                  }
+                                >
+                                  Delete
                                 </Button>
                               </CardActions>
                             </Card>
@@ -315,7 +345,7 @@ class CompanyProfile extends React.Component {
                         Past Contracts
                       </Typography>
                       <div align="center" display="flex-start">
-                        {this.state.company_contracts.map(card => (
+                        {this.state.past_contracts.map(card => (
                           <Grid
                             item
                             key={card}
@@ -328,77 +358,23 @@ class CompanyProfile extends React.Component {
                               <CardContent className={classes.cardContent}>
                                 <Typography
                                   gutterBottom
-                                  variant="h5"
+                                  variant="h"
                                   component="h2"
                                 >
                                   {card.title}
                                 </Typography>
                                 <Typography>{card.details}</Typography>
+                                <Typography>
+                                  {" "}
+                                  Amout Paid: ${card.payment}
+                                </Typography>
                               </CardContent>
-                              <CardActions
-                                style={{
-                                  display: "center",
-                                  justifyItems: "center",
-                                  marginTop: "20px"
-                                }}
-                              >
-                                <Button size="small" color="primary">
-                                  View
-                                </Button>
-                              </CardActions>
                             </Card>
                           </Grid>
                         ))}
                       </div>
                     </Grid>
                   </Grid>
-                  {/* <Typography
-                    component="h1"
-                    variant="h2"
-                    align="center"
-                    marginRight="0px"
-                    color="textPrimary"
-                    x
-                    gutterBottom
-                  >
-                    Contracts
-                  </Typography>
-                  <div align="center" display="flex-start">
-                    {cards.map(card => (
-                      <Grid
-                        item
-                        key={card}
-                        xs={12}
-                        sm={6}
-                        md={8}
-                        align="center"
-                      >
-                        <Card className={classes.card}>
-                          <CardContent className={classes.cardContent}>
-                            <Typography
-                              gutterBottom
-                              variant="h5"
-                              component="h2"
-                            >
-                              Contract Name
-                            </Typography>
-                            <Typography>Contract Details</Typography>
-                          </CardContent>
-                          <CardActions
-                            style={{
-                              display: "center",
-                              justifyItems: "center",
-                              marginTop: "20px"
-                            }}
-                          >
-                            <Button size="small" color="primary">
-                              View
-                            </Button>
-                          </CardActions>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </div> */}
                 </Grid>
               </Grid>
               <Container maxWidth="sm">
