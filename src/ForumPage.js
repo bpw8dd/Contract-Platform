@@ -258,22 +258,6 @@ export default class ForumPage extends React.Component {
           </Toolbar>
         </AppBar>
         {/* <Grid item xs ={12}> */}
-<<<<<<< HEAD
-        <br/>
-        <Typography
-          component="h1"
-          variant="h2"
-          align="center"
-          color="textPrimary"
-          gutterBottom
-        >
-          Developer Forum
-        </Typography>
-        <Typography variant="h5" align="center" color="textSecondary" paragraph>
-          Learn, share, and build with other developers in the RevTech
-          community! Give back some knowledge to others and share a post today.
-        </Typography>
-=======
         <br />
         <Container className="login" maxWidth="sm">
           <Typography
@@ -296,7 +280,6 @@ export default class ForumPage extends React.Component {
             today.
           </Typography>
         </Container>
->>>>>>> 485309b30c19197192450dc254024181a8a1cf1d
         {/* </Grid> */}
         <div className="postBar">
           <div>
